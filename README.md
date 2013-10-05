@@ -1,6 +1,9 @@
 # ed25519
 A native implementation of Ed25519(http://ed25519.cr.yp.to/) for node.js
 
+# Alpha notice.
+This implementation is not complete and we need to be changed in the future. And currently computes signatures incorrectly.
+
 ## Installation
 TODO
 
