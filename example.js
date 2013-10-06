@@ -5,14 +5,15 @@ var ed25519 = require('./');
 	First lets make some keypairs.
 */
 
-// Alice likes to be random, and remembers that the MakeKeypairFromSeed function takes a 32 byte buffer
-var aliceKeypair = ed25519.MakeKeypairFromSeed(crypto.randomBytes(32));
+// Alice likes to be random, and remembers that the MakeKeypair function takes a 32 byte buffer
+var aliceSeed = crypto.randomBytes(32);
+var aliceKeypair = ed25519.MakeKeypair(aliceSeed);
 
 // Bob thinks the nsa has their fingers in the random number generator so decides to use a password.
-// Charlie told Bob that sha512 rocks. So he decides to use the MakeKeypairFrom512Hash function that takes a 64 byte buffer
+// Charlie told Bob that sha256 rocks. So he decides to use the MakeKeypair but uses a hash instead of just random bytes
 var bobsPassword = 'I like the cute monkeys!';
-var hash = crypto.createHash('sha512').update(bobsPassword).digest(); //returns a buffer
-var bobKeypair = ed25519.MakeKeypairFrom512Hash(hash);
+var hash = crypto.createHash('sha256').update(bobsPassword).digest(); //returns a buffer
+var bobKeypair = ed25519.MakeKeypair(hash);
 
 
 /*
@@ -21,7 +22,7 @@ var bobKeypair = ed25519.MakeKeypairFrom512Hash(hash);
 var message = 'Hi Bob, How are your pet monkeys doing? What were their names again? -Alice';
 var signature = ed25519.Sign(new Buffer(message, 'utf8'), aliceKeypair); //Using Sign(Buffer, Keypair object)
 // or
-signature = ed25519.Sign(new Buffer(message, 'utf8'), aliceKeypair.privateKey); //Using Sign(Buffer, Buffer)
+var signature2 = ed25519.Sign(new Buffer(message, 'utf8'), aliceSeed); //Using Sign(Buffer, Buffer)
 
 // Alice sends her message and signature over to bob.
 
@@ -32,6 +33,12 @@ if (ed25519.Verify(new Buffer(message, 'utf8'), signature, aliceKeypair.publicKe
 } else {
 	// Bob doesn't trust the message becuase the Verify function returned false.
 	console.log('Signature NOT valid');
+}
+// check the other signature
+if (ed25519.Verify(new Buffer(message, 'utf8'), signature2, aliceKeypair.publicKey)) {
+	console.log('Signature2 valid');
+} else {
+	console.log('Signature2 NOT valid');
 }
 
 // Alice is a very courious gal and notices that there is also a key_exchange.c in the public domain code

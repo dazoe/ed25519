@@ -1,6 +1,6 @@
 {
   "name": "ed25519",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "An Ed25519 implementation for node.js",
   "main": "index.js",
   "scripts": {
