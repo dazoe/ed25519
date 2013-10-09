@@ -37,6 +37,7 @@ Handle<Value> MakeKeypair(const Arguments& args) {
 
 /**
  * Sign(Buffer message, Buffer seed)
+ * Sign(Buffer message, Buffer privateKey)
  * Sign(Buffer message, Object keyPair)
  * message: the message to be signed
  * seed: 32 byte buffer to make a keypair
@@ -46,7 +47,7 @@ Handle<Value> MakeKeypair(const Arguments& args) {
 Handle<Value> Sign(const Arguments& args) {
 	HandleScope scope;
 	if ((args.Length() < 2) || (!Buffer::HasInstance(args[0]->ToObject()))) {
-		return V8Exception("Sign requires (Buffer, {Buffer | keyPair object})");
+		return V8Exception("Sign requires (Buffer, {Buffer(32 or 64) | keyPair object})");
 	}
 	unsigned char* privateKey;
 	if ((Buffer::HasInstance(args[1])) && (Buffer::Length(args[1]->ToObject()) == 32)) {
@@ -58,14 +59,16 @@ Handle<Value> Sign(const Arguments& args) {
 		}
 		crypto_sign_keypair(publicKeyData, privateKeyData);
 		privateKey = privateKeyData;
+	} else if ((Buffer::HasInstance(args[1])) && (Buffer::Length(args[1]->ToObject()) == 64)) {
+		privateKey = (unsigned char*)Buffer::Data(args[1]->ToObject());
 	} else if ((args[1]->IsObject()) && (!Buffer::HasInstance(args[1]))) {
 		Handle<Object> privateKeyBuffer = args[1]->ToObject()->Get(String::New("privateKey"))->ToObject();
 		if (!Buffer::HasInstance(privateKeyBuffer)) {
-			return V8Exception("Sign requires (Buffer, {Buffer | keyPair object})");
+			return V8Exception("Sign requires (Buffer, {Buffer(32 or 64) | keyPair object})");
 		}
 		privateKey = (unsigned char*)Buffer::Data(privateKeyBuffer);
 	} else {
-		return V8Exception("Sign requires (Buffer, {Buffer(32) | keyPair object})");
+		return V8Exception("Sign requires (Buffer, {Buffer(32 or 64) | keyPair object})");
 	}
 	Handle<Object> message = args[0]->ToObject();
 	const unsigned char* messageData = (unsigned char*)Buffer::Data(message);

@@ -22,7 +22,9 @@ var bobKeypair = ed25519.MakeKeypair(hash);
 var message = 'Hi Bob, How are your pet monkeys doing? What were their names again? -Alice';
 var signature = ed25519.Sign(new Buffer(message, 'utf8'), aliceKeypair); //Using Sign(Buffer, Keypair object)
 // or
-var signature2 = ed25519.Sign(new Buffer(message, 'utf8'), aliceSeed); //Using Sign(Buffer, Buffer)
+var signature2 = ed25519.Sign(new Buffer(message, 'utf8'), aliceKeypair.privateKey); //Using Sign(Buffer, Keypair object)
+// or
+var signature3 = ed25519.Sign(new Buffer(message, 'utf8'), aliceSeed); //Using Sign(Buffer, Buffer)
 
 // Alice sends her message and signature over to bob.
 
@@ -34,11 +36,16 @@ if (ed25519.Verify(new Buffer(message, 'utf8'), signature, aliceKeypair.publicKe
 	// Bob doesn't trust the message becuase the Verify function returned false.
 	console.log('Signature NOT valid');
 }
-// check the other signature
+// check the other signatures
 if (ed25519.Verify(new Buffer(message, 'utf8'), signature2, aliceKeypair.publicKey)) {
 	console.log('Signature2 valid');
 } else {
 	console.log('Signature2 NOT valid');
+}
+if (ed25519.Verify(new Buffer(message, 'utf8'), signature3, aliceKeypair.publicKey)) {
+	console.log('Signature3 valid');
+} else {
+	console.log('Signature3 NOT valid');
 }
 
 // Alice is a very courious gal and notices that there is also a key_exchange.c in the public domain code
