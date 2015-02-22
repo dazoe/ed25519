@@ -4,7 +4,7 @@
   },
   'targets': [
     {
-      'target_name': 'native',
+      'target_name': 'ed25519',
       'sources': [
         'src/ed25519/keypair.c',
         'src/ed25519/sign.c',
@@ -68,6 +68,9 @@
             }]
           ]
         }]
+      ],
+      'include_dirs': [
+        "<!(node -e \"require('nan')\")"
       ]
     }
   ]
