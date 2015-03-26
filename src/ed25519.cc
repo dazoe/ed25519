@@ -75,7 +75,7 @@ NAN_METHOD(Sign) {
 	const unsigned char* messageData = (unsigned char*)Buffer::Data(message);
 	size_t messageLen = Buffer::Length(message);
 	unsigned long long sigLen = 64 + messageLen;
-	unsigned char signatureMessageData[sigLen];
+	unsigned char *signatureMessageData = (unsigned char*) malloc(sigLen);
 	crypto_sign(signatureMessageData, &sigLen, messageData, messageLen, privateKey);
 
 	v8::Local<v8::Object> signature = NanNewBufferHandle(64);
@@ -83,6 +83,7 @@ NAN_METHOD(Sign) {
 	for (int i = 0; i < 64; i++) {
 		signatureData[i] = signatureMessageData[i];
 	}
+	free(signatureMessageData);
 	NanReturnValue(signature);
 }
 
