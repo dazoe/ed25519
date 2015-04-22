@@ -2,6 +2,7 @@
 #include <node_buffer.h>
 
 #include <nan.h>
+#include <stdlib.h>
 
 #include "ed25519/ed25519.h"
 
