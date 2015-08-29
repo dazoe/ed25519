@@ -122,5 +122,4 @@ void InitModule(Handle<Object> exports) {
 	exports->Set(NanNew("Verify"), NanNew<FunctionTemplate>(Verify)->GetFunction());
 }
 
-NODE_MODULE(native, InitModule)
-
+NODE_MODULE(ed25519, InitModule)
