@@ -2,7 +2,7 @@
 A native implementation of Ed25519(http://ed25519.cr.yp.to/) for node.js
 
 ## Installation
-npm install https://github.com/dazoe/ed25519/tarball/master
+npm install ed25519
 
 ## Usage
 For usage details see the example.js file.
