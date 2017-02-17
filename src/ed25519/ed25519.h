@@ -3,6 +3,11 @@
 
 #include <stddef.h>
 
+#define ISOLATE(V) v8::Isolate* isolate = (V).GetIsolate();\
+  v8::HandleScope scope(isolate);
+
+#define TYPEERROR(E) isolate->ThrowException(v8::Exception::TypeError(v8::String::NewFromUtf8(isolate, ("Error: "#E)))); return;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
