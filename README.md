@@ -2,7 +2,12 @@
 A native implementation of Ed25519(http://ed25519.cr.yp.to/) for node.js
 
 ## Installation
-npm install ed25519
+npm install --registry=https://github.com/classfellow/ed25519.git ed25519
+
+## Node engine
+`node-v4`
+`node-v6`
+`node-v7`
 
 ## Usage
 For usage details see the example.js file.
