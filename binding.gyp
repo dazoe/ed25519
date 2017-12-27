@@ -84,7 +84,9 @@
 			  },
 			}],
 		  ],
-		  
+		  'libraries': [ 
+			'-l<(openssl_root)/lib/libcrypto.lib',
+		  ],
 		  'include_dirs': [
 			'<(openssl_root)/include',
 		  ],
