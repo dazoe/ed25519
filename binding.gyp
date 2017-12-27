@@ -85,7 +85,7 @@
 			}],
 		  ],
 		  'libraries': [ 
-			'-l<(openssl_root)/lib/libeay32.lib',
+			'-l<(openssl_root)/lib/libcrypto.lib',
 		  ],
 		  'include_dirs': [
 			'<(openssl_root)/include',
