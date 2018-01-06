@@ -1,6 +1,9 @@
 #ifndef GE_H
 #define GE_H
 
+#include "fe.h"
+
+
 /*
 ge means group element.
 
@@ -14,8 +17,6 @@ Representations:
   ge_p1p1 (completed): ((X:Z),(Y:T)) satisfying x=X/Z, y=Y/T
   ge_precomp (Duif): (y+x,y-x,2dxy)
 */
-
-#include "fe.h"
 
 typedef struct {
   fe X;
@@ -50,46 +51,24 @@ typedef struct {
   fe T2d;
 } ge_cached;
 
-#define ge_frombytes_negate_vartime crypto_sign_ed25519_ref10_ge_frombytes_negate_vartime
-#define ge_tobytes crypto_sign_ed25519_ref10_ge_tobytes
-#define ge_p3_tobytes crypto_sign_ed25519_ref10_ge_p3_tobytes
+void ge_p3_tobytes(unsigned char *s, const ge_p3 *h);
+void ge_tobytes(unsigned char *s, const ge_p2 *h);
+int ge_frombytes_negate_vartime(ge_p3 *h, const unsigned char *s);
 
-#define ge_p2_0 crypto_sign_ed25519_ref10_ge_p2_0
-#define ge_p3_0 crypto_sign_ed25519_ref10_ge_p3_0
-#define ge_precomp_0 crypto_sign_ed25519_ref10_ge_precomp_0
-#define ge_p3_to_p2 crypto_sign_ed25519_ref10_ge_p3_to_p2
-#define ge_p3_to_cached crypto_sign_ed25519_ref10_ge_p3_to_cached
-#define ge_p1p1_to_p2 crypto_sign_ed25519_ref10_ge_p1p1_to_p2
-#define ge_p1p1_to_p3 crypto_sign_ed25519_ref10_ge_p1p1_to_p3
-#define ge_p2_dbl crypto_sign_ed25519_ref10_ge_p2_dbl
-#define ge_p3_dbl crypto_sign_ed25519_ref10_ge_p3_dbl
+void ge_add(ge_p1p1 *r, const ge_p3 *p, const ge_cached *q);
+void ge_sub(ge_p1p1 *r, const ge_p3 *p, const ge_cached *q);
+void ge_double_scalarmult_vartime(ge_p2 *r, const unsigned char *a, const ge_p3 *A, const unsigned char *b);
+void ge_madd(ge_p1p1 *r, const ge_p3 *p, const ge_precomp *q);
+void ge_msub(ge_p1p1 *r, const ge_p3 *p, const ge_precomp *q);
+void ge_scalarmult_base(ge_p3 *h, const unsigned char *a);
 
-#define ge_madd crypto_sign_ed25519_ref10_ge_madd
-#define ge_msub crypto_sign_ed25519_ref10_ge_msub
-#define ge_add crypto_sign_ed25519_ref10_ge_add
-#define ge_sub crypto_sign_ed25519_ref10_ge_sub
-#define ge_scalarmult_base crypto_sign_ed25519_ref10_ge_scalarmult_base
-#define ge_double_scalarmult_vartime crypto_sign_ed25519_ref10_ge_double_scalarmult_vartime
-
-extern void ge_tobytes(unsigned char *,const ge_p2 *);
-extern void ge_p3_tobytes(unsigned char *,const ge_p3 *);
-extern int ge_frombytes_negate_vartime(ge_p3 *,const unsigned char *);
-
-extern void ge_p2_0(ge_p2 *);
-extern void ge_p3_0(ge_p3 *);
-extern void ge_precomp_0(ge_precomp *);
-extern void ge_p3_to_p2(ge_p2 *,const ge_p3 *);
-extern void ge_p3_to_cached(ge_cached *,const ge_p3 *);
-extern void ge_p1p1_to_p2(ge_p2 *,const ge_p1p1 *);
-extern void ge_p1p1_to_p3(ge_p3 *,const ge_p1p1 *);
-extern void ge_p2_dbl(ge_p1p1 *,const ge_p2 *);
-extern void ge_p3_dbl(ge_p1p1 *,const ge_p3 *);
-
-extern void ge_madd(ge_p1p1 *,const ge_p3 *,const ge_precomp *);
-extern void ge_msub(ge_p1p1 *,const ge_p3 *,const ge_precomp *);
-extern void ge_add(ge_p1p1 *,const ge_p3 *,const ge_cached *);
-extern void ge_sub(ge_p1p1 *,const ge_p3 *,const ge_cached *);
-extern void ge_scalarmult_base(ge_p3 *,const unsigned char *);
-extern void ge_double_scalarmult_vartime(ge_p2 *,const unsigned char *,const ge_p3 *,const unsigned char *);
+void ge_p1p1_to_p2(ge_p2 *r, const ge_p1p1 *p);
+void ge_p1p1_to_p3(ge_p3 *r, const ge_p1p1 *p);
+void ge_p2_0(ge_p2 *h);
+void ge_p2_dbl(ge_p1p1 *r, const ge_p2 *p);
+void ge_p3_0(ge_p3 *h);
+void ge_p3_dbl(ge_p1p1 *r, const ge_p3 *p);
+void ge_p3_to_cached(ge_cached *r, const ge_p3 *p);
+void ge_p3_to_p2(ge_p2 *r, const ge_p3 *p);
 
 #endif
