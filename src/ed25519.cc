@@ -53,10 +53,10 @@ NAN_METHOD(Sign) {
 	if ((info.Length() < 2) || (!Buffer::HasInstance(info[0]->ToObject()))) {
 		return Nan::ThrowError("Sign requires (Buffer, {Buffer(32 or 64) | keyPair object})");
 	}
+	unsigned char privateKeyData[64]; //put this variable here because of the bug on mac
 	if ((Buffer::HasInstance(info[1])) && (Buffer::Length(info[1]->ToObject()) == 32)) {
 		unsigned char* seed = (unsigned char*)Buffer::Data(info[1]->ToObject());
 		unsigned char publicKeyData[32];
-		unsigned char privateKeyData[64];
 		for (int i = 0; i < 32; i++) {
 			privateKeyData[i] = seed[i];
 		}
