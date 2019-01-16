@@ -7,4 +7,6 @@ node_js:
   - "8.15.0"
 
 install: npm install
-script: exit 0
+script: 
+   - npm install mocha
+   - npm test
