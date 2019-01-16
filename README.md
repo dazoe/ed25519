@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/gaoxiangxyz/ed25519.svg?branch=master)](https://travis-ci.org/gaoxiangxyz/ed25519)
 # ed25519
 A native implementation of Ed25519(http://ed25519.cr.yp.to/) for node.js
 
