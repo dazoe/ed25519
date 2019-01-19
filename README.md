@@ -5,6 +5,10 @@ A native implementation of Ed25519(http://ed25519.cr.yp.to/) for node.js
 ## Installation
 npm install https://github.com/gaoxiangxyz/ed25519.git
 
+## Testing
+Operation System: Linux(Ubuntu Trusty), MacOS, Windows
+Node: 10.15.0, 8.15.0
+
 ## Usage
 For usage details see the example.js file.
 
