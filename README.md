@@ -8,7 +8,7 @@ npm install https://github.com/gaoxiangxyz/ed25519.git
 ## Testing
 Operation System: Linux(Ubuntu Trusty), MacOS, Windows
 
-Node: 10.15.0, 8.15.0
+Node.js: 10.15.0, 8.15.0
 
 ## Usage
 For usage details see the example.js file.
