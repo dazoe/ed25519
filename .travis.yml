@@ -5,6 +5,7 @@ os:
   - windows
 node_js:
   - "8.15.0"
+  - "10.15.0"
 
 install: npm install
 script: 
