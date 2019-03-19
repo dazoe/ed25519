@@ -3,8 +3,8 @@
   "version": "0.0.4",
   "description": "An Ed25519 implementation for node.js",
   "dependencies": {
-    "bindings": "^1.2.1",
-    "nan": "^2.0.9"
+    "bindings": "^1.5.0",
+    "nan": "^2.13.1"
   },
   "main": "index.js",
   "scripts": {
