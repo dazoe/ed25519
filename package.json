@@ -1,6 +1,6 @@
 {
   "name": "ed25519",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "An Ed25519 implementation for node.js",
   "dependencies": {
     "bindings": "^1.5.0",
@@ -23,6 +23,6 @@
   "license": "BSD-2-Clause",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dazoe/ed25519.git"
+    "url": "https://github.com/gaoxiangxyz/ed25519.git"
   }
 }
