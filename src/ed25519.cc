@@ -16,10 +16,18 @@ using namespace node;
  **/
 NAN_METHOD(MakeKeypair) {
 	Nan::HandleScope scope;
-	if ((info.Length() < 1) || (!Buffer::HasInstance(info[0])) || (Buffer::Length(info[0]->ToObject()) != 32)) {
+	v8::Local<v8::Value> bufferObj;
+	if (info.Length() < 1 ||
+	    !info[0]->ToObject(Nan::GetCurrentContext()).ToLocal(&bufferObj) ||
+		!Buffer::HasInstance(bufferObj))
+	{
+		return Nan::ThrowError("MakeKeypair requires a Buffer parameter");
+	}
+	if (Buffer::Length(bufferObj) != 32) {
 		return Nan::ThrowError("MakeKeypair requires a 32 byte buffer");
 	}
-	const unsigned char* seed = (unsigned char*)Buffer::Data(info[0]->ToObject());
+
+	const unsigned char* seed = (unsigned char*)Buffer::Data(bufferObj);
 
 	v8::Local<v8::Object> privateKey = Nan::NewBuffer(64).ToLocalChecked();
 
@@ -27,13 +35,14 @@ NAN_METHOD(MakeKeypair) {
 
 	v8::Local<v8::Object> publicKey = Nan::NewBuffer(32).ToLocalChecked();
 	unsigned char* publicKeyData = (unsigned char*)Buffer::Data(publicKey);
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < 32; i++) {
 		privateKeyData[i] = seed[i];
+	}
 	crypto_sign_keypair(publicKeyData, privateKeyData);
 
 	Local<Object> result = Nan::New<Object>();
-	result->Set(Nan::New("publicKey").ToLocalChecked(), publicKey);
-	result->Set(Nan::New("privateKey").ToLocalChecked(), privateKey);
+	result->Set(Nan::GetCurrentContext(), Nan::New("publicKey").ToLocalChecked(), publicKey);
+	result->Set(Nan::GetCurrentContext(), Nan::New("privateKey").ToLocalChecked(), privateKey);
 	info.GetReturnValue().Set(result);
 }
 
@@ -50,32 +59,42 @@ NAN_METHOD(Sign) {
 	Nan::HandleScope scope;
 	unsigned char* privateKey;
 
-	if ((info.Length() < 2) || (!Buffer::HasInstance(info[0]->ToObject()))) {
+	v8::Local<v8::Object> messageObj;
+	v8::Local<v8::Object> obj1;
+	if (info.Length() < 2 ||
+	    !info[0]->ToObject(Nan::GetCurrentContext()).ToLocal(&messageObj) ||
+		!Buffer::HasInstance(messageObj) ||
+	    !info[1]->ToObject(Nan::GetCurrentContext()).ToLocal(&obj1)) {
 		return Nan::ThrowError("Sign requires (Buffer, {Buffer(32 or 64) | keyPair object})");
 	}
 	unsigned char privateKeyData[64]; //put this variable here because of the bug on mac
-	if ((Buffer::HasInstance(info[1])) && (Buffer::Length(info[1]->ToObject()) == 32)) {
-		unsigned char* seed = (unsigned char*)Buffer::Data(info[1]->ToObject());
+	bool obj1IsBuffer = Buffer::HasInstance(obj1);
+	size_t obj1BufferLength = obj1IsBuffer ? Buffer::Length(obj1) : 0;
+	if (obj1IsBuffer && obj1BufferLength == 32) {
+		unsigned char* seed = (unsigned char*)Buffer::Data(obj1);
 		unsigned char publicKeyData[32];
 		for (int i = 0; i < 32; i++) {
 			privateKeyData[i] = seed[i];
 		}
 		crypto_sign_keypair(publicKeyData, privateKeyData);
 		privateKey = privateKeyData;
-	} else if ((Buffer::HasInstance(info[1])) && (Buffer::Length(info[1]->ToObject()) == 64)) {
-		privateKey = (unsigned char*)Buffer::Data(info[1]->ToObject());
-	} else if ((info[1]->IsObject()) && (!Buffer::HasInstance(info[1]))) {
-		Local<Value> privateKeyBuffer = info[1]->ToObject()->Get(Nan::New<String>("privateKey").ToLocalChecked())->ToObject();
-		if (!Buffer::HasInstance(privateKeyBuffer)) {
+	} else if (obj1IsBuffer && obj1BufferLength == 64) {
+		privateKey = (unsigned char*)Buffer::Data(obj1);
+	} else if (obj1->IsObject() && !obj1IsBuffer) {
+		v8::Local<v8::Value> privateKeyPropertyObj;
+		v8::Local<v8::Object> privateKeyBufferObj;
+		if (!(obj1->Get(Nan::GetCurrentContext(), Nan::New<String>("privateKey").ToLocalChecked())).ToLocal(&privateKeyPropertyObj) ||
+			!privateKeyPropertyObj->ToObject(Nan::GetCurrentContext()).ToLocal(&privateKeyBufferObj) ||
+			!Buffer::HasInstance(privateKeyBufferObj)) {
 			return Nan::ThrowError("Sign requires (Buffer, {Buffer(32 or 64) | keyPair object})");
 		}
-		privateKey = (unsigned char*)Buffer::Data(privateKeyBuffer);
+		privateKey = (unsigned char*)Buffer::Data(privateKeyBufferObj);
 	} else {
 		return Nan::ThrowError("Sign requires (Buffer, {Buffer(32 or 64) | keyPair object})");
 	}
-	Handle<Object> message = info[0]->ToObject();
-	const unsigned char* messageData = (unsigned char*)Buffer::Data(message);
-	size_t messageLen = Buffer::Length(message);
+
+	const unsigned char* messageData = (unsigned char*)Buffer::Data(messageObj);
+	size_t messageLen = Buffer::Length(messageObj);
 	unsigned long long sigLen = 64 + messageLen;
 	unsigned char *signatureMessageData = (unsigned char*) malloc(sigLen);
 	crypto_sign(signatureMessageData, &sigLen, messageData, messageLen, privateKey);
@@ -98,16 +117,21 @@ NAN_METHOD(Sign) {
  * returns: boolean
  **/
 NAN_METHOD(Verify) {
-	if ((info.Length() < 3) || (!Buffer::HasInstance(info[0]->ToObject())) ||
-		(!Buffer::HasInstance(info[1]->ToObject())) || (!Buffer::HasInstance(info[2]->ToObject()))) {
+	v8::Local<v8::Object> message;
+	v8::Local<v8::Object> signature;
+	v8::Local<v8::Object> publicKey;
+	if (info.Length() < 3 ||
+	    !info[0]->ToObject(Nan::GetCurrentContext()).ToLocal(&message) ||
+		!Buffer::HasInstance(message) ||
+	    !info[1]->ToObject(Nan::GetCurrentContext()).ToLocal(&signature) ||
+		!Buffer::HasInstance(signature) ||
+		Buffer::Length(signature) != 64 ||
+	    !info[2]->ToObject(Nan::GetCurrentContext()).ToLocal(&publicKey) ||
+		!Buffer::HasInstance(publicKey) ||
+		Buffer::Length(publicKey) != 32) {
 		return Nan::ThrowError("Verify requires (Buffer, Buffer(64), Buffer(32)");
 	}
-	Handle<Object> message = info[0]->ToObject();
-	Handle<Object> signature = info[1]->ToObject();
-	Handle<Object> publicKey = info[2]->ToObject();
-	if ((Buffer::Length(signature) != 64) || (Buffer::Length(publicKey) != 32)) {
-		return Nan::ThrowError("Verify requires (Buffer, Buffer(64), Buffer(32)");
-	}
+
 	unsigned char* messageData = (unsigned char*)Buffer::Data(message);
 	size_t messageLen = Buffer::Length(message);
 	unsigned char* signatureData = (unsigned char*)Buffer::Data(signature);
@@ -117,7 +141,7 @@ NAN_METHOD(Verify) {
 }
 
 
-void InitModule(Handle<Object> exports) {
+void InitModule(v8::Local<v8::Object> exports) {
 	Nan::SetMethod(exports, "MakeKeypair", MakeKeypair);
 	Nan::SetMethod(exports, "Sign", Sign);
 	Nan::SetMethod(exports, "Verify", Verify);
