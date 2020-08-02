@@ -26,7 +26,8 @@ jobs:
 
     - name: Run Mocha tests
       run: |
-        npm install -g mocha
+        # Node 8 needs Mocha < 8.0
+        npm install -g mocha@7.2
         mocha ./test/ed25519.js
 
   build-test-linux-ubuntu-node10:
