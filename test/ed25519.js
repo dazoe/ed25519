@@ -10,10 +10,10 @@ var data = {
   invalidSignature: "88c8351675ade54b3aedc14f0b9c40b47569d9da191db066312ed6423d20dff8a52988f869fc3fbf4402971034b387ac7fbcfa704eb4c1e86e48e15de5e3d205"
 };
 
-describe("ed25519", function() {
+describe("ed25519", function () {
   describe("#MakeKeypair()", function () {
     it("returns a public and private key", function () {
-      var seed = new Buffer(data.seed, "hex")
+      var seed = Buffer.from(data.seed, "hex");
       var keyPair = ed25519.MakeKeypair(seed);
 
       assert.equal(
@@ -29,18 +29,18 @@ describe("ed25519", function() {
   });
 
   describe("#Sign()", function () {
-    it("Generates a valid signature using a seed", function(){
-      var seed = new Buffer(data.seed, "hex")
-      var message = new Buffer(data.message);
+    it("Generates a valid signature using a seed", function () {
+      var seed = Buffer.from(data.seed, "hex");
+      var message = Buffer.from(data.message);
       var signature = ed25519.Sign(message, seed);
 
       assert.equal(signature.toString("hex"), data.signature)
     });
 
-    it("Generates a valid signature using a keyPair", function(){
-      var privateKey = new Buffer(data.privateKey, "hex")
-      var publicKey = new Buffer(data.publicKey, "hex")
-      var message = new Buffer(data.message);
+    it("Generates a valid signature using a keyPair", function () {
+      var privateKey = Buffer.from(data.privateKey, "hex");
+      var publicKey = Buffer.from(data.publicKey, "hex");
+      var message = Buffer.from(data.message);
       var signature = ed25519.Sign(
         message,
         {
@@ -49,23 +49,23 @@ describe("ed25519", function() {
         }
       );
 
-      assert.equal(signature.toString("hex"), data.signature)
+      assert.equal(signature.toString("hex"), data.signature);
     });
   });
 
   describe("#Verify", function() {
-    it("returns true if the signature is valid", function(){
-      var publicKey = new Buffer(data.publicKey, "hex")
-      var signature = new Buffer(data.signature, "hex")
-      var message = new Buffer(data.message);
+    it("returns true if the signature is valid", function () {
+      var publicKey = Buffer.from(data.publicKey, "hex");
+      var signature = Buffer.from(data.signature, "hex");
+      var message = Buffer.from(data.message);
 
       assert.ok(ed25519.Verify(message, signature, publicKey));
     });
 
-    it("returns false if the signature is not valid", function(){
-      var publicKey = new Buffer(data.publicKey, "hex")
-      var signature = new Buffer(data.invalidSignature, "hex")
-      var message = new Buffer(data.message);
+    it("returns false if the signature is not valid", function () {
+      var publicKey = Buffer.from(data.publicKey, "hex");
+      var signature = Buffer.from(data.invalidSignature, "hex");
+      var message = Buffer.from(data.message);
 
       assert.ok(!ed25519.Verify(message, signature, publicKey));
     });
