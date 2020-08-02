@@ -67,7 +67,7 @@ describe("ed25519", function() {
       var signature = new Buffer(data.invalidSignature, "hex")
       var message = new Buffer(data.message);
 
-      assert.ifError(ed25519.Verify(message, signature, publicKey));
+      assert.ok(!ed25519.Verify(message, signature, publicKey));
     });
   })
 });
