@@ -10,7 +10,7 @@ on:
 
 # Jobs default to running in parallel.
 jobs:
-  build-linux-ubuntu-node10:
+  build-test-linux-ubuntu-node8:
     runs-on: ubuntu-latest
     steps:
     - name: Setup Node.js environment
@@ -20,7 +20,7 @@ jobs:
         # always-auth: # optional, default is false
 
         # Version Spec of the version to use.  Examples: 12.x, 10.15.1, >=10.15.0
-        node-version: 10.x
+        node-version: 8.x
         
         # Set this option if you want the action to check for the latest available version that satisfies the version spec
         # check-latest: # optional
@@ -31,6 +31,64 @@ jobs:
         # scope: # optional
         # Used to pull node distributions from node-versions.  Since there's a default, this is typically not supplied by the user.
         # token: # optional, default is ${{ github.token }}
+
+  build-test-linux-ubuntu-node10:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v2.1.1
+      with:
+        # Set always-auth in npmrc
+        # always-auth: # optional, default is false
+
+        # Version Spec of the version to use.  Examples: 12.x, 10.15.1, >=10.15.0
+        node-version: 10.x
+
+    # Check out repository under $GITHUB_WORKSPACE
+    - uses: actions/checkout@v2
+
+    - name: Run 'npm install' in the repo root to build code.
+      run: npm install
+
+    - name: Run Mocha tests
+      run: |
+        npm install -g mocha
+        mocha ./test/ed25519.js
+
+  build-test-linux-ubuntu-node12:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v2.1.1
+      with:
+        # Set always-auth in npmrc
+        # always-auth: # optional, default is false
+
+        # Version Spec of the version to use.  Examples: 12.x, 10.15.1, >=10.15.0
+        node-version: 12.x
+
+    # Check out repository under $GITHUB_WORKSPACE
+    - uses: actions/checkout@v2
+
+    - name: Run 'npm install' in the repo root to build code.
+      run: npm install
+
+    - name: Run Mocha tests
+      run: |
+        npm install -g mocha
+        mocha ./test/ed25519.js
+
+  build-test-linux-ubuntu-node14:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v2.1.1
+      with:
+        # Set always-auth in npmrc
+        # always-auth: # optional, default is false
+
+        # Version Spec of the version to use.  Examples: 12.x, 10.15.1, >=10.15.0
+        node-version: 14.x
 
     # Check out repository under $GITHUB_WORKSPACE
     - uses: actions/checkout@v2
