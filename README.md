@@ -1,6 +1,9 @@
 # ed25519
 A native implementation of [Ed25519](http://ed25519.cr.yp.to/) for Node.js.
 
+## Build and test status
+![ed25519 CI](https://github.com/dazoe/ed25519/workflows/ed25519%20CI/badge.svg?branch=master)
+
 ## Installation
 npm install ed25519
 
