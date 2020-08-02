@@ -43,9 +43,8 @@ NAN_METHOD(MakeKeypair) {
 	crypto_sign_keypair(publicKeyData, privateKeyData);
 
 	Local<Object> result = Nan::New<Object>();
-	result->Set(Nan::GetCurrentContext(), Nan::New("publicKey").ToLocalChecked(), publicKey);
-	result->Set(Nan::New("privateKey").ToLocalChecked(), privateKey);
-	result->Set(Nan::GetCurrentContext(), Nan::New("privateKey").ToLocalChecked(), privateKey);
+	result->Set(Nan::GetCurrentContext(), Nan::New("publicKey").ToLocalChecked(), publicKey).ToChecked();
+	result->Set(Nan::GetCurrentContext(), Nan::New("privateKey").ToLocalChecked(), privateKey).ToChecked();
 	info.GetReturnValue().Set(result);
 }
 
