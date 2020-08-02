@@ -1,0 +1,44 @@
+name: ed25519 CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+# Jobs default to running in parallel.
+jobs:
+  build-linux-ubuntu-node10:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v2.1.1
+      with:
+        # Set always-auth in npmrc
+        # always-auth: # optional, default is false
+
+        # Version Spec of the version to use.  Examples: 12.x, 10.15.1, >=10.15.0
+        node-version: 10.x
+        
+        # Set this option if you want the action to check for the latest available version that satisfies the version spec
+        # check-latest: # optional
+        
+        # Optional registry to set up for auth. Will set the registry in a project level .npmrc and .yarnrc file, and set up auth to read in from env.NODE_AUTH_TOKEN
+        # registry-url: # optional
+        # Optional scope for authenticating against scoped registries
+        # scope: # optional
+        # Used to pull node distributions from node-versions.  Since there's a default, this is typically not supplied by the user.
+        # token: # optional, default is ${{ github.token }}
+
+    # Check out repository under $GITHUB_WORKSPACE
+    - uses: actions/checkout@v2
+
+    - name: Run 'npm install' in the repo root to build code.
+      run: npm install
+
+    - name: Run Mocha tests
+      run: |
+        npm install -g mocha
+        mocha ./test/ed25519.js
