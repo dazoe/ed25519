@@ -1,5 +1,5 @@
 #include "ed25519.h"
-#include <openssl/sha.h>
+#include "../sha512.h"
 #include "crypto_verify_32.h"
 #include "ge.h"
 #include "sc.h"
@@ -23,7 +23,7 @@ int crypto_sign_open(
 
   for (i = 0;i < smlen;++i) m[i] = sm[i];
   for (i = 0;i < 32;++i) m[32 + i] = pk[i];
-  SHA512(m, smlen, h);
+  sha512(m, smlen, h);
   sc_reduce(h);
 
   ge_double_scalarmult_vartime(&R,h,&A,sm + 32);
@@ -42,7 +42,7 @@ int crypto_sign_open(
 int crypto_sign_verify(const unsigned char *signature, const unsigned char *message, size_t message_len, const unsigned char *public_key) {
     unsigned char h[64];
     unsigned char checker[32];
-    SHA512_CTX hash;
+    sha512_context hash;
     ge_p3 A;
     ge_p2 R;
 
@@ -54,11 +54,11 @@ int crypto_sign_verify(const unsigned char *signature, const unsigned char *mess
         return -2;
     }
 
-    SHA512_Init(&hash);
-    SHA512_Update(&hash, signature, 32);
-    SHA512_Update(&hash, public_key, 32);
-    SHA512_Update(&hash, message, message_len);
-    SHA512_Final(h, &hash);
+    sha512_init(&hash);
+    sha512_update(&hash, signature, 32);
+    sha512_update(&hash, public_key, 32);
+    sha512_update(&hash, message, message_len);
+    sha512_final(&hash, h);
 
     sc_reduce(h);
     ge_double_scalarmult_vartime(&R, h, &A, signature + 32);

@@ -1,5 +1,5 @@
 #include "ed25519.h"
-#include <openssl/sha.h>
+#include "../sha512.h"
 #include "ge.h"
 
 int crypto_sign_keypair(unsigned char *pk, unsigned char *sk)
@@ -8,7 +8,7 @@ int crypto_sign_keypair(unsigned char *pk, unsigned char *sk)
   ge_p3 A;
   int i;
 
-  SHA512(sk, 32, h);
+  sha512(sk, 32, h);
   h[0] &= 248;
   h[31] &= 63;
   h[31] |= 64;
