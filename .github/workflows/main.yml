@@ -1,126 +1,27 @@
-name: ed25519 CI
+name: CI
 
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
 
-# Jobs default to running in parallel.
 jobs:
-  build-test-linux-ubuntu-node8:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node: [8, 10, 12, 14]
+
     steps:
-    - name: Setup Node.js environment
-      uses: actions/setup-node@v2.1.1
+    - uses: actions/setup-node@v2
       with:
-        node-version: 8.x
+        node-version: ${{ matrix.node }}
 
-    # Check out repository under $GITHUB_WORKSPACE
     - uses: actions/checkout@v2
+    - run: npm ci && npm i -g mocha
 
-    - name: Run 'npm install' in the repo root to build code.
-      run: npm install
+    - if: matrix.node == 8
+      run: npm i -g mocha@7.2
 
-    - name: Run Mocha tests
-      run: |
-        # Node 8 needs Mocha < 8.0
-        npm install -g mocha@7.2
-        mocha ./test/ed25519.js
-
-  build-test-linux-ubuntu-node10:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Setup Node.js environment
-      uses: actions/setup-node@v2.1.1
-      with:
-        node-version: 10.x
-
-    # Check out repository under $GITHUB_WORKSPACE
-    - uses: actions/checkout@v2
-
-    - name: Run 'npm install' in the repo root to build code.
-      run: npm install
-
-    - name: Run Mocha tests
-      run: |
-        npm install -g mocha
-        mocha ./test/ed25519.js
-
-  build-test-linux-ubuntu-node12:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Setup Node.js environment
-      uses: actions/setup-node@v2.1.1
-      with:
-        node-version: 12.x
-
-    # Check out repository under $GITHUB_WORKSPACE
-    - uses: actions/checkout@v2
-
-    - name: Run 'npm install' in the repo root to build code.
-      run: npm install
-
-    - name: Run Mocha tests
-      run: |
-        npm install -g mocha
-        mocha ./test/ed25519.js
-
-  build-test-linux-ubuntu-node14:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Setup Node.js environment
-      uses: actions/setup-node@v2.1.1
-      with:
-        node-version: 14.x
-
-    # Check out repository under $GITHUB_WORKSPACE
-    - uses: actions/checkout@v2
-
-    - name: Run 'npm install' in the repo root to build code.
-      run: npm install
-
-    - name: Run Mocha tests
-      run: |
-        npm install -g mocha
-        mocha ./test/ed25519.js
-
-  build-test-windows-node12:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Setup Node.js environment
-      uses: actions/setup-node@v2.1.1
-      with:
-        node-version: 12.x
-
-    # Check out repository under $GITHUB_WORKSPACE
-    - uses: actions/checkout@v2
-
-    - name: Run 'npm install' in the repo root to build code.
-      run: npm install
-
-    - name: Run Mocha tests
-      run: |
-        npm install -g mocha
-        mocha ./test/ed25519.js
-
-  build-test-macos-node12:
-    runs-on: macos-latest
-    steps:
-    - name: Setup Node.js environment
-      uses: actions/setup-node@v2.1.1
-      with:
-        node-version: 12.x
-
-    # Check out repository under $GITHUB_WORKSPACE
-    - uses: actions/checkout@v2
-
-    - name: Run 'npm install' in the repo root to build code.
-      run: npm install
-
-    - name: Run Mocha tests
-      run: |
-        npm install -g mocha
-        mocha ./test/ed25519.js
+    - run: mocha ./test/ed25519.js
